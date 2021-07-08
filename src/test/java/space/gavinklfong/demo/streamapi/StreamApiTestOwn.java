@@ -1,7 +1,9 @@
 package space.gavinklfong.demo.streamapi;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -68,23 +70,24 @@ public class StreamApiTestOwn {
 
   // Obtain a list of product with category = “Toys” and then apply 10% discount
 
-	@Test
-	public void exercise3() {
+  @Test
+  public void exercise3() {
 
-		log.info(
-				"exercise 3 - Obtain a list of product with category = “Toys” and then apply 10% discount");
-		long startTime = System.currentTimeMillis();
-		List<Product> res = productRepo.findAll()
-				.stream()
-				.filter(p -> p.getCategory().equalsIgnoreCase("Toys"))
-				.map(p -> p.withPrice(p.getPrice() * 0.9))
-				.collect(Collectors.toList());
+    log.info(
+        "exercise 3 - Obtain a list of product with category = “Toys” and then apply 10% discount");
+    long startTime = System.currentTimeMillis();
+    List<Product> res = productRepo.findAll()
+        .stream()
+        .filter(p -> p.getCategory().equalsIgnoreCase("Toys"))
+        .map(p -> p.withPrice(p.getPrice() * 0.9))
+        .collect(Collectors.toList());
 
-		res.forEach(r -> log.info(r.toString()));
+    res.forEach(r -> log.info(r.toString()));
 
-	}
-	// Obtain a list of products ordered by customer of tier 2 between 01-Feb-2021 and 01-Apr-2021
-	@Test
+  }
+
+  // Obtain a list of products ordered by customer of tier 2 between 01-Feb-2021 and 01-Apr-2021
+  @Test
   public void exercise4() {
 
     log.info(
@@ -102,16 +105,21 @@ public class StreamApiTestOwn {
     res.forEach(r -> log.info(r.toString()));
   }
 
-	//
-	// Get the cheapest products of “Books” category
+  //
+  // Get the cheapest products of “Books” category
 
   //
-	@Test
+  @Test
   public void exercise5() {
 
     log.info("exercise 5 - Get the 3 cheapest products of \"Books\" category");
     long startTime = System.currentTimeMillis();
+    Optional<Product> res = productRepo.findAll()
+        .stream()
+        .filter(p -> p.getCategory().equalsIgnoreCase("Books"))
+        .min(Comparator.comparing(Product::getPrice));
 
+    log.info(res.get().toString());
 
   }
 
@@ -123,7 +131,13 @@ public class StreamApiTestOwn {
 
     log.info("exercise 6 - Get the 3 most recent placed order");
     long startTime = System.currentTimeMillis();
+    List<Order> res=orderRepo.findAll()
+        .stream()
+        .sorted(Comparator.comparing(Order::getOrderDate).reversed())
+        .limit(3)
+        .collect(Collectors.toList());
 
+    res.forEach(r->log.info(r.toString()));
   }
 
   //
